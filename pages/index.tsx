@@ -7,11 +7,8 @@ import { ResponsiveAppBar } from "../components/GlobalNavBar";
 const Home: NextPage = () => {
   return (
     <div className={styles.container}>
-      <Head>
-        <ResponsiveAppBar></ResponsiveAppBar>
-      </Head>
+  
 
-      <main className={styles.main}></main>
     </div>
   );
 };
