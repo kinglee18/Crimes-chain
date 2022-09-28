@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useContext, useEffect, useState} from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -14,6 +14,30 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { VerifiedUser } from "@mui/icons-material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { AppLink } from "./AppLink";
+import { Web3Context } from "../context/web3Provider";
+import { Snackbar } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import { ethers } from "ethers";
+
+ const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+      >
+      </IconButton>
+    </React.Fragment>
+  );
+const connectWallet = async(w3Provider: ethers.providers.Web3Provider, openSnackBar: React.Dispatch<React.SetStateAction<boolean>>) => {
+  try {
+    await w3Provider.send("eth_requestAccounts", []);
+    const signer = w3Provider.getSigner();
+  }
+  catch(err) {
+    openSnackBar(true);
+  }
+};
 
 const pages = [
   { label: "Dashboard" },
@@ -23,6 +47,8 @@ const pages = [
 const settings = ["Profile", "Account", "Logout"];
 
 export const ResponsiveAppBar = () => {
+  const {w3Provider} = useContext(Web3Context);
+  const [snackbar, openSnackBar] = useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -141,6 +167,16 @@ export const ResponsiveAppBar = () => {
                 <AccountCircleIcon />
               </IconButton>
             </Tooltip>
+            <Button         
+                  onClick={() => connectWallet(w3Provider, openSnackBar)}          
+                  sx={{
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    letterSpacing: ".3rem",
+                    color: "white",
+                    textDecoration: "none",
+                  }}
+                  >Connect my wallet</Button>
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
@@ -167,6 +203,13 @@ export const ResponsiveAppBar = () => {
           </Box>
         </Toolbar>
       </Container>
+      <Snackbar
+        open={snackbar}
+        autoHideDuration={2000}
+        onClose={() => openSnackBar(false)}
+        message="Could not connect wallet"
+        action={action}
+      />
     </AppBar>
   );
 };

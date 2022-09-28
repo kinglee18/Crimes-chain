@@ -9,9 +9,9 @@ interface Props {
 export default function Layout({ children }: Props) {
   return (
     <>
-      <Head>
+      <div>
         <ResponsiveAppBar></ResponsiveAppBar>
-      </Head>
+      </div>
       <main>{children}</main>
     </>
   );
