@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,26 +19,32 @@ import { Snackbar } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { ethers } from "ethers";
 
- const action = (
-    <React.Fragment>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-      >
-      </IconButton>
-    </React.Fragment>
-  );
-const connectWallet = async(w3Provider: ethers.providers.Web3Provider, openSnackBar: React.Dispatch<React.SetStateAction<boolean>>) => {
+const action = (
+  <React.Fragment>
+    <IconButton
+      size="small"
+      aria-label="close"
+      color="inherit"
+    >
+    </IconButton>
+  </React.Fragment>
+);
+const connectWallet = async (
+  w3Provider: ethers.providers.Web3Provider,
+  openSnackBar: React.Dispatch<React.SetStateAction<boolean>>
+) => {
   try {
     await w3Provider.send("eth_requestAccounts", []);
     const signer = w3Provider.getSigner();
   }
-  catch(err) {
+  catch (err) {
     openSnackBar(true);
   }
 };
 
+const getConnectedAccounts = async () => {
+  return await ethereum.request({method: 'eth_accounts'});
+};
 const pages = [
   { label: "Dashboard" },
   { label: "Report" },
@@ -47,8 +53,9 @@ const pages = [
 const settings = ["Profile", "Account", "Logout"];
 
 export const ResponsiveAppBar = () => {
-  const {w3Provider} = useContext(Web3Context);
+  const { w3Provider } = useContext(Web3Context);
   const [snackbar, openSnackBar] = useState(false);
+  const [connectedAccounts, setConnectedAccounts] = useState<string[]>([]);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -71,6 +78,9 @@ export const ResponsiveAppBar = () => {
     setAnchorElUser(null);
   };
 
+  useEffect(() => {
+    getConnectedAccounts().then(accounts => setConnectedAccounts(accounts));
+  }, []);
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -167,16 +177,24 @@ export const ResponsiveAppBar = () => {
                 <AccountCircleIcon />
               </IconButton>
             </Tooltip>
-            <Button         
-                  onClick={() => connectWallet(w3Provider, openSnackBar)}          
-                  sx={{
-                    fontFamily: "monospace",
-                    fontWeight: 700,
-                    letterSpacing: ".3rem",
-                    color: "white",
-                    textDecoration: "none",
-                  }}
-                  >Connect my wallet</Button>
+            {
+              connectedAccounts.length ? connectedAccounts[0] : (
+                <Button
+                onClick={async () => {
+                  await connectWallet(w3Provider, openSnackBar);
+                  const accounts = await getConnectedAccounts();
+                  setConnectedAccounts(accounts);
+                }}
+                sx={{
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  letterSpacing: ".3rem",
+                  color: "white",
+                  textDecoration: "none",
+                }}
+              >Connect my wallet</Button>
+              )
+            }
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"

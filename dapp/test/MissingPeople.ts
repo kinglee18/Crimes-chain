@@ -4,6 +4,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { MissingPeople } from "../typechain-types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { BigNumber } from "ethers";
 
 describe("MissingPeople", function () {
     enum Resolution {
@@ -72,15 +73,15 @@ describe("MissingPeople", function () {
         let  peopleContract : MissingPeople;
 
         beforeEach("", async () => {
-            const {peopleContract}  = (await createSingleReport());
-            
+             peopleContract  = await ((await createSingleReport()).peopleContract);
         });
 
         it("Should create a new register ", async () => {
             const description = "Some terrible situation";
-            await peopleContract.createFollowup(description, 0);
-            const  a = await peopleContract.followUpReports.call(0);
-            console.log(a)
+            await expect(peopleContract.createFollowup(description, 0))
+                .to.emit(peopleContract,"CaseFollowup");
+            const follorupReports = await peopleContract.getFollowupReports(0);
+            expect(follorupReports.length).to.equal(1);
         });
     });
 });

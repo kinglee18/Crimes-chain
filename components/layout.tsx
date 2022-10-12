@@ -10,7 +10,7 @@ export default function Layout({ children }: Props) {
   return (
     <>
       <div>
-        <ResponsiveAppBar></ResponsiveAppBar>
+        <ResponsiveAppBar key={"navbar_1"}></ResponsiveAppBar>
       </div>
       <main>{children}</main>
     </>

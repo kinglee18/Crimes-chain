@@ -4,6 +4,7 @@ import "hardhat/console.sol";
 
 contract MissingPeople {
     event CaseClosed(uint date, Resolution resolution);
+    event CaseFollowup();
 
     enum CommonColors {
         BLACK, BROWN, BLUE, GREEN
@@ -48,7 +49,6 @@ contract MissingPeople {
     }
 
     mapping(uint => FollowUpReport[]) public followUpReports;
-    uint followUpReportsCount = 0;
 
     Report [] public crimeReports;
     
@@ -78,7 +78,11 @@ contract MissingPeople {
             reporter: msg.sender,
             report: id
         }); 
-        followUpReports[id].push (report);
-        followUpReportsCount++;
+        followUpReports[id].push(report);
+        emit CaseFollowup();
+    }
+
+    function getFollowupReports(uint reportId) public view returns( FollowUpReport[] memory){
+        return followUpReports[reportId];
     }
 }
