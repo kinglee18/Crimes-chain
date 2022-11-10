@@ -20,26 +20,28 @@ contract MissingPeople {
         CommonColors eyes;
         CommonColors hair;
         Genre sex;
+        string remarks;
         string name;
         uint birthDate;
         string nationality;
-        uint height;
+        uint weight;
         uint width;
+        string [] images;
     }
 
-    struct Coordinate {
+    struct Coordinates {
         string lat;
         string long;
+        string radius;
     }
 
     struct Report {
         uint id;
         address reporter;
-        Coordinate crimeLocation;
         uint created;
         Resolution resolution;
         Person missingPerson;
-            }
+    }
 
     struct FollowUpReport {
         string description;
@@ -47,21 +49,24 @@ contract MissingPeople {
         address reporter;
         uint report;
     }
-
+    
+    mapping(uint => Coordinates[])  public reportCoordinates;
     mapping(uint => FollowUpReport[]) public followUpReports;
 
     Report [] public crimeReports;
     
-    function createReport(Coordinate memory location,  Person memory missingPerson) public{
+    function createReport(Coordinates[] memory location,  Person memory missingPerson) public{
         Report memory report = Report({
             resolution: Resolution.SEARCHING,
             id: crimeReports.length,
             created : block.timestamp,
             reporter: msg.sender,
-            crimeLocation: location,
             missingPerson: missingPerson
         });
         crimeReports.push(report);
+         for(uint i = 0; i < location.length; i++) {
+            reportCoordinates[report.id].push(location[i]);
+        }
     }
 
 
@@ -84,5 +89,8 @@ contract MissingPeople {
 
     function getFollowupReports(uint reportId) public view returns( FollowUpReport[] memory){
         return followUpReports[reportId];
+    }
+    function getCrimeReports() external view returns (Report[] memory) {
+        return crimeReports;
     }
 }

@@ -14,12 +14,12 @@ describe("MissingPeople", function () {
         SEARCHING = 3
     }
     enum CommonColors {
-        BLACK = 0, BROWN = 1, BLUE = 2, GREEN = 3
+        BLACK = 0, BROWN = 1, BLUE = 2, GREEN = 3, OTHER = 4
     }
     enum Genre {
         MALE = 0, FEMALE = 1 , OTHER = 2 
     }
-    let location = {lat: ('19.9273172'), long :'-97.9658038'};
+    let location = [{lat: ('19.9273172'), long :'-97.9658038', radius: '-6.33'}];
 
     async function createSingleReport() {
         const {peopleContract, owner, otherAccount}  = await (await loadFixture(deployPeopleFixture));
@@ -30,8 +30,10 @@ describe("MissingPeople", function () {
             name: "Rick",
             birthDate: 2,
             nationality: "some",
-            height: 3,
-            width :5
+            weight: 3,
+            width :5,
+            remarks: 'Rainwalker has a slight speech impediment and pronounces the letter "r" like a "w".',
+            images: []
         });
         return { peopleContract, owner, otherAccount };
     }
@@ -50,10 +52,12 @@ describe("MissingPeople", function () {
             const {peopleContract, owner}  = (await createSingleReport());
             const firstReport = await peopleContract.crimeReports(0);
             expect(await firstReport.reporter).to.equal(owner.address);
-            expect(await firstReport.crimeLocation.lat).to.equal(location.lat);
-            expect(await firstReport.crimeLocation.long).to.equal(location.long);
+            const coordinates = await peopleContract.reportCoordinates(0, 0);
+            expect(await coordinates.long).to.equal(location[0].long);
+            expect(await coordinates.lat).to.equal(location[0].lat);
             expect(await firstReport.missingPerson.name).to.equal("Rick");
         });
+
 
         it("Should revert closecase if user is not reporter", async () => {
             const {peopleContract, otherAccount}  = (await createSingleReport());
