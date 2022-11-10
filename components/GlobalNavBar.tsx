@@ -18,6 +18,8 @@ import { Web3Context } from "../context/web3Provider";
 import { Snackbar } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { ethers } from "ethers";
+import { connectWallet, getConnectedAccounts, getContractInstance } from "../utils/web3";
+
 
 const action = (
   <React.Fragment>
@@ -29,22 +31,10 @@ const action = (
     </IconButton>
   </React.Fragment>
 );
-const connectWallet = async (
-  w3Provider: ethers.providers.Web3Provider,
-  openSnackBar: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-  try {
-    await w3Provider.send("eth_requestAccounts", []);
-    const signer = w3Provider.getSigner();
-  }
-  catch (err) {
-    openSnackBar(true);
-  }
-};
 
-const getConnectedAccounts = async () => {
-  return await ethereum.request({method: 'eth_accounts'});
-};
+
+
+
 const pages = [
   { label: "Dashboard" },
   { label: "Report" },
@@ -53,7 +43,7 @@ const pages = [
 const settings = ["Profile", "Account", "Logout"];
 
 export const ResponsiveAppBar = () => {
-  const { w3Provider } = useContext(Web3Context);
+  const { w3Provider, setPeopleContract } = useContext(Web3Context);
   const [snackbar, openSnackBar] = useState(false);
   const [connectedAccounts, setConnectedAccounts] = useState<string[]>([]);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -181,9 +171,10 @@ export const ResponsiveAppBar = () => {
               connectedAccounts.length ? connectedAccounts[0] : (
                 <Button
                 onClick={async () => {
-                  await connectWallet(w3Provider, openSnackBar);
+                  const signer = await connectWallet(w3Provider, openSnackBar);
                   const accounts = await getConnectedAccounts();
                   setConnectedAccounts(accounts);
+                  setPeopleContract(getContractInstance(signer));
                 }}
                 sx={{
                   fontFamily: "monospace",
