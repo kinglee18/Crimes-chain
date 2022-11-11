@@ -5,25 +5,25 @@ import { Dispatch, Fragment, SyntheticEvent } from "react";
 
 
 interface PhotoLoaderProps {
-    photos: any[],
-    setPhotos: Dispatch<any[]>
+    images: any[],
+    setImages: Dispatch<any[]>
 }
-export const PhotoLoader = ({ photos, setPhotos }: PhotoLoaderProps) => {
+export const PhotoLoader = ({ images, setImages }: PhotoLoaderProps) => {
     const handleUploadClick = (event: any) => {
         var file = event.target.files[0];
         const reader = new FileReader();
         var url = reader.readAsDataURL(file);
 
         reader.onloadend = function (e) {
-            setPhotos([...photos, reader.result]);
+            setImages([...images, reader.result]);
         }.bind(this);
-        setPhotos([...photos, event.target.files[0]]);
+        setImages([...images, event.target.files[0]]);
     };
 
     return (
         <Fragment>
             {
-                photos.map((photo, index) => (
+                images.map((photo, index) => (
                     <Image
                         key={index}
                         width="300px"
