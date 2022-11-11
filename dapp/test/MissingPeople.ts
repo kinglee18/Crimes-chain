@@ -1,10 +1,7 @@
 import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { MissingPeople } from "../typechain-types";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { BigNumber } from "ethers";
 
 describe("MissingPeople", function () {
     enum Resolution {
@@ -31,7 +28,7 @@ describe("MissingPeople", function () {
             birthDate: 2,
             nationality: "some",
             weight: 3,
-            width :5,
+            height :5,
             remarks: 'Rainwalker has a slight speech impediment and pronounces the letter "r" like a "w".',
             images: []
         });

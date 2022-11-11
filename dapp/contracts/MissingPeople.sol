@@ -25,7 +25,7 @@ contract MissingPeople {
         uint birthDate;
         string nationality;
         uint weight;
-        uint width;
+        uint height;
         string [] images;
     }
 
