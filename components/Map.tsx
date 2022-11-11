@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Dispatch, useEffect, useRef, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-import { Autocomplete, Circle, DrawingManager, GoogleMap, Marker, Polyline, useJsApiLoader } from '@react-google-maps/api';
+import { Autocomplete, Circle, GoogleMap, Marker, Polyline, useJsApiLoader } from '@react-google-maps/api';
 import { CircleProps, coordinates } from "../utils/interfaces";
 import { Box, Button, Stack } from "@mui/material";
 
@@ -13,12 +13,12 @@ const containerStyle = {
 const libs: any = ["places", "drawing", "geometry", "localContext", "visualization"];
 
 interface MapProps {
-  onCircleComplete: (polyline: google.maps.Circle) => void,
   initialPosition: GeolocationPosition,
-  locationsToDraw?: CircleProps[],
-  enableControls?: boolean
+  locations?: CircleProps[],
+  enableControls?: boolean,
+  setLocations: Dispatch<any>
 }
-export const CrimesMap = ({ initialPosition, onCircleComplete, locationsToDraw = [], enableControls= false}: MapProps) => {
+export const CrimesMap = ({ initialPosition, locations = [], enableControls= false, setLocations}: MapProps) => {
   const { isLoaded } = useJsApiLoader({
     
     id: 'google-map-script',
@@ -29,15 +29,7 @@ export const CrimesMap = ({ initialPosition, onCircleComplete, locationsToDraw =
   const [centerPosition, setCenterPosition] = useState(initialPosition);
   const [map, setMap] = useState(null)
   const [autocomplete, setAutocomplete] = useState<Autocomplete | null>(null);
-  const [circles, setCircles] = useState<CircleProps[]>([]);
-
-
-
-
-  useEffect(() => {
-    //setCircles([...locationsToDraw]);
-    
-  }, [locationsToDraw]);
+  const [selectedLocation, setSelectedLocation] = useState<number>();
 
 
   const onLoad = React.useCallback(function callback(map) {
@@ -56,12 +48,14 @@ export const CrimesMap = ({ initialPosition, onCircleComplete, locationsToDraw =
 
   const onPlaceChanged = () => {
     if (autocomplete) {
-
-      setCenterPosition(autocomplete.getPlace().geometry.location)
+      setCenterPosition({coords: { 
+        latitude: autocomplete.getPlace().geometry.location.lat(),
+        longitude: autocomplete.getPlace().geometry.location.lng(),
+      }})
     }
   }
   const addLocation = () => {
-    setCircles(prev => ([...prev, {
+    setLocations(prev => ([...prev, {
       coordinates: {
         lat: centerPosition.coords.latitude,
         lng: centerPosition.coords.longitude
@@ -71,8 +65,13 @@ export const CrimesMap = ({ initialPosition, onCircleComplete, locationsToDraw =
       editable: true,
     }]));
   };
-  const deleteLocation = () => {
 
+  const deleteLocation = () => {
+    if(selectedLocation !== undefined) {
+      const newLocations = [...locations];
+      newLocations.splice(selectedLocation, 1);
+      setLocations(newLocations);
+    }
   };
   return isLoaded ? (
     <>
@@ -115,7 +114,7 @@ export const CrimesMap = ({ initialPosition, onCircleComplete, locationsToDraw =
             />
           </Autocomplete>
           {
-            circles.map((location, index) => (
+            locations.map((location, index) => (
               <Circle
                 key={`circle_${index}`}
                 center={location.coordinates}
@@ -123,7 +122,9 @@ export const CrimesMap = ({ initialPosition, onCircleComplete, locationsToDraw =
                   radius: location.radius,
                   draggable: location.draggable,
                   editable: location.editable,
+                  strokeColor: selectedLocation === index ? 'red' :'black'
                 }}
+                onClick={() => setSelectedLocation(index)}
               />
             ))
           }
