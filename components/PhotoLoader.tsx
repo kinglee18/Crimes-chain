@@ -1,7 +1,7 @@
 import { AddPhotoAlternate } from "@mui/icons-material";
 import { CardActionArea, Fab } from "@mui/material";
 import Image from "next/image";
-import { Dispatch, Fragment, SyntheticEvent } from "react";
+import { Dispatch, Fragment } from "react";
 
 
 interface PhotoLoaderProps {
@@ -10,14 +10,12 @@ interface PhotoLoaderProps {
 }
 export const PhotoLoader = ({ images, setImages }: PhotoLoaderProps) => {
     const handleUploadClick = (event: any) => {
-        var file = event.target.files[0];
+        const file = event.target.files[0];
         const reader = new FileReader();
-        var url = reader.readAsDataURL(file);
-
-        reader.onloadend = function (e) {
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
             setImages([...images, reader.result]);
         }.bind(this);
-        setImages([...images, event.target.files[0]]);
     };
 
     return (
@@ -33,9 +31,9 @@ export const PhotoLoader = ({ images, setImages }: PhotoLoaderProps) => {
                     />
                 ))
             }
-                        <CardActionArea >
+            <CardActionArea >
                 <input
-                    accept="image/*"
+                    accept="image/jpeg"
                     id="contained-button-file"
                     multiple
                     type="file"
