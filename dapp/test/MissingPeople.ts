@@ -16,25 +16,29 @@ describe("MissingPeople", function () {
     enum Genre {
         MALE = 0, FEMALE = 1 , OTHER = 2 
     }
-    let location = [{lat: ('19.9273172'), long :'-97.9658038', radius: '-6.33'}];
+    let location = [
+        {lat: ('18.9273172'), lng :'-96.9658038', radius: '-6.23'},
+        {lat: ('19.9273172'), lng :'-97.9658038', radius: '-6.33'}
+    ];
 
     async function createSingleReport() {
         const {peopleContract, owner, otherAccount}  = await (await loadFixture(deployPeopleFixture));
-        await peopleContract.createReport(location, {
-            eyes: CommonColors.BLACK,
-            hair: CommonColors.BLACK,
-            sex: Genre.FEMALE,
-            name: "Rick",
-            birthDate: 2,
-            nationality: "some",
-            weight: 3,
-            height :5,
-            remarks: 'Rainwalker has a slight speech impediment and pronounces the letter "r" like a "w".',
-            images: []
-        });
+        await peopleContract.createReport(location, 
+            {
+                "name": "Rick",
+                "height": "1",
+                "weight": "3",
+                "birthDate": 1668052621000,
+                "genre": Genre.FEMALE,
+                "nationality": "Mexican",
+                "eyes": CommonColors.BLACK,
+                "hair": CommonColors.BLACK,
+                "remarks": 'Rainwalker has a slight speech impediment and pronounces the letter "r" like a "w".',
+                "images": []
+            }
+        );
         return { peopleContract, owner, otherAccount };
     }
-
     async function deployPeopleFixture() {
         const [owner, otherAccount] = await ethers.getSigners();
         const MissingPeople = await ethers.getContractFactory("MissingPeople");
@@ -50,7 +54,7 @@ describe("MissingPeople", function () {
             const firstReport = await peopleContract.crimeReports(0);
             expect(await firstReport.reporter).to.equal(owner.address);
             const coordinates = await peopleContract.reportCoordinates(0, 0);
-            expect(await coordinates.long).to.equal(location[0].long);
+            expect(await coordinates.lng).to.equal(location[0].lng);
             expect(await coordinates.lat).to.equal(location[0].lat);
             expect(await firstReport.missingPerson.name).to.equal("Rick");
         });

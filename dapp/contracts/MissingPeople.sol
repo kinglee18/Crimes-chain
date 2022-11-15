@@ -19,7 +19,7 @@ contract MissingPeople {
     struct Person {
         CommonColors eyes;
         CommonColors hair;
-        Genre sex;
+        Genre genre;
         string remarks;
         string name;
         uint birthDate;
@@ -31,7 +31,7 @@ contract MissingPeople {
 
     struct Coordinates {
         string lat;
-        string long;
+        string lng;
         string radius;
     }
 
@@ -64,7 +64,7 @@ contract MissingPeople {
             missingPerson: missingPerson
         });
         crimeReports.push(report);
-         for(uint i = 0; i < location.length; i++) {
+        for(uint i = 0; i < location.length; i++) {
             reportCoordinates[report.id].push(location[i]);
         }
     }
@@ -92,5 +92,8 @@ contract MissingPeople {
     }
     function getCrimeReports() external view returns (Report[] memory) {
         return crimeReports;
+    }
+    function getAllReportCoordinates (uint id) external view returns (Coordinates[] memory) {
+        return reportCoordinates[id];
     }
 }
