@@ -37,7 +37,7 @@ const action = (
 
 const pages = [
   { label: "Dashboard" },
-  { label: "Report" },
+  { label: "Crimes" },
   { label: "missing persons", url: "missing-persons-directory" },
 ];
 const settings = ["Profile", "Account", "Logout"];
