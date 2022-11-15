@@ -10,7 +10,7 @@ export const AppLink = (props: LinkProps) => {
   const { href, label } = props;
 
   return (
-    <Link href={href.toLowerCase()}>
+    <Link href={`/${href.toLowerCase()}`}>
       <a>{label}</a>
     </Link>
   );
