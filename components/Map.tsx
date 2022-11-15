@@ -16,7 +16,7 @@ interface MapProps {
   initialPosition: GeolocationPosition,
   locations?: CircleProps[],
   enableControls?: boolean,
-  setLocations: Dispatch<any>
+  setLocations?: Dispatch<any>
 }
 export const CrimesMap = ({ initialPosition, locations = [], enableControls= false, setLocations}: MapProps) => {
   const { isLoaded } = useJsApiLoader({
@@ -73,6 +73,20 @@ export const CrimesMap = ({ initialPosition, locations = [], enableControls= fal
       setLocations(newLocations);
     }
   };
+
+  const onCircleDrag = (e: any, index: number) => {
+    const newLocations = [...locations];
+    const removed = newLocations.splice(index, 1);
+    setLocations([...newLocations, {
+      coordinates: {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng()
+      },
+      radius: removed[0].radius,
+      editable: true
+    }]);
+  };
+
   return isLoaded ? (
     <>
       { enableControls && 
@@ -125,6 +139,7 @@ export const CrimesMap = ({ initialPosition, locations = [], enableControls= fal
                   strokeColor: selectedLocation === index ? 'red' :'black'
                 }}
                 onClick={() => setSelectedLocation(index)}
+                onDragEnd={e => onCircleDrag(e, index)}
               />
             ))
           }
