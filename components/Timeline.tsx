@@ -4,21 +4,28 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import TimelineDot from '@mui/lab/TimelineDot';
-import FastfoodIcon from '@mui/icons-material/Fastfood';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
-import HotelIcon from '@mui/icons-material/Hotel';
-import RepeatIcon from '@mui/icons-material/Repeat';
 import Typography from '@mui/material/Typography';
 import { Timeline } from '@mui/lab';
 import { MissingPeople } from '../dapp/typechain-types';
 import moment from 'moment';
+import { Article } from '@mui/icons-material';
+import { Button, Container, Stack, TextField } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import { Dispatch, useState } from 'react';
+import { blockTimeStampToDate } from '../utils/web3';
 
 interface CustomizedTimelineProps {
-    record: MissingPeople.ReportStructOutput
+  record: MissingPeople.ReportStructOutput,
+  submitTip: Dispatch<any>,
+  followUpReports: MissingPeople.FollowUpReportStruct[]
 };
 
-export function CustomizedTimeline({record}: CustomizedTimelineProps) {
-    return (
+export function CustomizedTimeline({ record, submitTip, followUpReports }: CustomizedTimelineProps) {
+  const [tip, setTip] = useState<string | undefined>();
+
+  return (
+    <Container>
       <Timeline position="alternate">
         <TimelineItem>
           <TimelineOppositeContent
@@ -27,12 +34,12 @@ export function CustomizedTimeline({record}: CustomizedTimelineProps) {
             variant="body2"
             color="text.secondary"
           >
-            {`${moment(Number.parseInt(record.created.toString())).format('DD-MMM-YYYY')}`}
+            {`${blockTimeStampToDate(record.created)}`}
           </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineConnector />
             <TimelineDot>
-              <FastfoodIcon />
+              <Article />
             </TimelineDot>
             <TimelineConnector />
           </TimelineSeparator>
@@ -43,58 +50,52 @@ export function CustomizedTimeline({record}: CustomizedTimelineProps) {
             <Typography>{record.reporter.toString()}</Typography>
           </TimelineContent>
         </TimelineItem>
-        <TimelineItem>
-          <TimelineOppositeContent
-            sx={{ m: 'auto 0' }}
-            variant="body2"
-            color="text.secondary"
-          >
-            10:00 am
-          </TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineConnector />
-            <TimelineDot color="primary">
-              <LaptopMacIcon />
-            </TimelineDot>
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent sx={{ py: '12px', px: 2 }}>
-            <Typography variant="h6" component="span">
-              Code
-            </Typography>
-            <Typography>Because it&apos;s awesome!</Typography>
-          </TimelineContent>
-        </TimelineItem>
-        <TimelineItem>
-          <TimelineSeparator>
-            <TimelineConnector />
-            <TimelineDot color="primary" variant="outlined">
-              <HotelIcon />
-            </TimelineDot>
-            <TimelineConnector sx={{ bgcolor: 'secondary.main' }} />
-          </TimelineSeparator>
-          <TimelineContent sx={{ py: '12px', px: 2 }}>
-            <Typography variant="h6" component="span">
-              Sleep
-            </Typography>
-            <Typography>Because you need rest</Typography>
-          </TimelineContent>
-        </TimelineItem>
-        <TimelineItem>
-          <TimelineSeparator>
-            <TimelineConnector sx={{ bgcolor: 'secondary.main' }} />
-            <TimelineDot color="secondary">
-              <RepeatIcon />
-            </TimelineDot>
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent sx={{ py: '12px', px: 2 }}>
-            <Typography variant="h6" component="span">
-              Repeat
-            </Typography>
-            <Typography>Because this is the life you love!</Typography>
-          </TimelineContent>
-        </TimelineItem>
+        {
+          followUpReports.map((followReport, index) => (
+            <>
+              <TimelineItem>
+                <TimelineOppositeContent
+                  sx={{ m: 'auto 0' }}
+                  variant="body2"
+                  align="left"
+                  color="text.secondary"
+                >
+                  {blockTimeStampToDate(followReport.created)}
+                </TimelineOppositeContent>
+                <TimelineSeparator>
+                  <TimelineConnector />
+                  <TimelineDot color="primary">
+                    <LaptopMacIcon />
+                  </TimelineDot>
+                  <TimelineConnector />
+                </TimelineSeparator>
+                <TimelineContent sx={{ py: '12px', px: 2 }} key={`follow_up${index}`}>
+                  <Typography variant="h6" component="span">
+                    Code
+                  </Typography>
+                  <Typography>Because it&apos;s awsesome!</Typography>
+                </TimelineContent>
+              </TimelineItem>
+            </>
+          ))
+        }
       </Timeline>
-    );
-  }
+
+      <Stack direction={'row'}>
+        <TextField
+          fullWidth
+          label="Submit a Tip"
+          name="tip"
+          variant="filled"
+          onChange={e => setTip(e.target.value)}
+          type='text'
+          value={tip}
+        />
+        <Button variant="contained" onClick={() => submitTip(tip)} disabled={tip === undefined}>
+          <SendIcon />
+        </Button>
+      </Stack>
+    </Container>
+
+  );
+}

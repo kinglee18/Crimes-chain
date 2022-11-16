@@ -2,76 +2,51 @@ import type { NextPage } from "next";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Avatar,
+  Box,
   Button,
   Card,
   Collapse,
   List,
+  ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
   Stack,
 } from "@mui/material";
-import contem from "../public/contemplative-reptile.jpeg";
 import Image from "next/image";
 import Grid from "@mui/material/Unstable_Grid2";
-import WorkIcon from "@mui/icons-material/Work";
-import ImageIcon from "@mui/icons-material/Image";
 import {
+  Boy,
   ExpandLess,
   ExpandMore,
   Girl,
-  RemoveRedEye,
-  StarBorder,
-  SvgIconComponent,
+  Person,
 } from "@mui/icons-material";
-import FaceIcon from "@mui/icons-material/Face";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { Web3Context } from "../context/web3Provider";
 import { AppLink } from "../components/AppLink";
+import { MissingPeople } from "../dapp/typechain-types";
+import moment from "moment";
+import Link from "next/link";
 
-interface Person {
-  name: string;
-}
-interface Colapse {
-  children: React.ReactNode;
-  content: Person;
-}
-const CollapsibleSection = ({ children, content }: Colapse) => {
-  return (
-    <>
-      <ListItemButton>
-        <ListItemAvatar>
-          <Avatar>{children}</Avatar>
-        </ListItemAvatar>
-        <ListItemText primary="Body" />
-        {true ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={true} timeout="auto" unmountOnExit>
-        <List component="div"></List>
-      </Collapse>
-    </>
-  );
-};
+
 const MissingPersonDirectory: NextPage = () => {
   const { peopleContract } = useContext(Web3Context);
-  const [personsDirectory, setPersonsDirectory] = useState<Person[]>([]);
+  const [personsDirectory, setPersonsDirectory] = useState<MissingPeople.ReportStructOutput[]>([]);
 
   useEffect(() => {
     const getRecords = async () => {
-      const records = await  peopleContract.getCrimeReports()
+      let records = await peopleContract.getCrimeReports();
       setPersonsDirectory(records)
     };
     getRecords()
   }, [peopleContract]);
 
+
   return (
     <Stack>
       <Stack direction={'row'} spacing={3} justifyContent="center" alignItems="center">
-        
-
         <Button variant="outlined" >
-          <AppLink href={'add-missing-person' } label={'Register disappearance'} />
+          <AppLink href={'add-missing-person'} label={'Register disappearance'} />
         </Button>
       </Stack>
       <Grid
@@ -81,63 +56,71 @@ const MissingPersonDirectory: NextPage = () => {
         p={3}
       >
         {
-          personsDirectory.map((person: Person, index: number) => (
-            <Grid xs={2} sm={4} md={4} key={`image-${index}`}>
-              <Card sx={{ p: 3 }}>
-                <Stack direction="row">
-                  <Image
-                    height="140"
-                    width="440"
-                    alt="green iguana"
-                    src="/contemplative-reptile.jpeg"
-                  />
-                  <List
-                    sx={{
-                      width: "100%",
-                      bgcolor: "background.paper",
-                    }}
-                  >
-                    <ListItemButton>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <FaceIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Appearance" />
-                      {true ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={true} timeout="auto" unmountOnExit>
-                      <List component="div">
-                        <div style={{ paddingLeft: 60 }}>
-                          Cabello: lacio, largo, cafe Ojos: medianos cafe Tez:
-                          morena Cejas: Semipobladas Boca:- Nariz:
-                        </div>
-                      </List>
-                    </Collapse>
+          personsDirectory.map((record, index: number) => {
+            const {missingPerson} = record;
+            return <Grid xs={2} sm={4} md={4} key={`image-${index}`}>
+                <Card sx={{ p: 3 }}>
+                  <Link href={`/missing-person/${record.id}/`}>
+                  <Stack direction="row">
+                    <Image
+                      height="440"
+                      width="440"
+                      alt="green iguana"
+                      src={`https://ipfs.io/ipfs/${missingPerson.images[0]}`}
+                    />
 
-                    <ListItemButton>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <Girl />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Body" />
-                      {true ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={true} timeout="auto" unmountOnExit>
-                      <List component="div">
-                        <div style={{ paddingLeft: 60 }}>Complexion: bombona</div>
-                      </List>
-                    </Collapse>
+                    <List
+                      sx={{
+                        width: "100%",
+                        bgcolor: "background.paper",
+                      }}
+                    >
+                      <Stack direction={'row'} pl={2}>
+                        <ListItemAvatar>
+                          <Avatar>
+                            {
+                              missingPerson.genre === 0 && <Boy/>
+                            }
+                                                      {
+                              missingPerson.genre === 1 && <Girl/>
+                            }
+                                                      {
+                              missingPerson.genre === 2 && <Person/>
+                            }
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={missingPerson.name} />
+                      </Stack>
 
-                    <CollapsibleSection content={person}>
-                      <FaceIcon />
-                    </CollapsibleSection>
-                  </List>
-                </Stack>
-              </Card>
-            </Grid>
-          ))
+                      <Box pl={2}>
+                        <ListItem  divider disablePadding>
+                          <ListItemText primary={`Weight: ${missingPerson.weight.toString()}`} divider />
+                        </ListItem>
+                        <ListItem  divider disablePadding>
+                          <ListItemText primary={`Height: ${missingPerson.height.toString()}`} divider />
+                        </ListItem>
+                        <ListItem  divider disablePadding>
+                          <ListItemText 
+                            primary={`Birth Date: ${ moment(Number.parseInt(missingPerson.birthDate.toString())).format('DD-MMM-YYYY')}`}
+                            divider
+                          />
+                        </ListItem>
+                        <ListItem  divider disablePadding>
+                          <ListItemText primary={`Nationality: ${missingPerson.nationality}`} divider />
+                        </ListItem>
+                        <ListItem  divider disablePadding>
+                          <ListItemText primary={`Eyes: ${missingPerson.eyes}`} divider />
+                        </ListItem>
+                        <ListItem  divider disablePadding>
+                          <ListItemText primary={`Hair: ${missingPerson.hair}`} divider />
+                        </ListItem>
+                      </Box>
+                    </List>
+                  </Stack>
+                  </Link>
+                </Card>
+              </Grid>
+          })
         }
       </Grid>
     </Stack>

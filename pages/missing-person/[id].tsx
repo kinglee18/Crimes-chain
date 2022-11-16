@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import { Boy, Girl, Person } from '@mui/icons-material';
 import moment from 'moment';
 import { CrimesMap } from '../../components/Map';
-import { CustomizedTimeline } from '../../components/timeline';
+import { CustomizedTimeline } from '../../components/Timeline';
 
 function MissinPerson() {
     const { peopleContract } = useContext(Web3Context);
@@ -18,41 +18,55 @@ function MissinPerson() {
     const { id } = router.query;
     const [userLocation, setUserLocation] = useState<GeolocationPosition>();
     const [locations, setLocations] = useState([]);
+    const [followUpReports, setFollowUpReports] = useState([]);
+
     const showPosition = (position: GeolocationPosition) => {
-      setUserLocation(position)
+        setUserLocation(position)
     }
+    const submitTip = async (detail: string) => {
+        try {
+            const response = await peopleContract.createFollowup(detail, Number.parseInt(id));
+            await response.wait();
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const getLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
         }
     }
-      useEffect(() => {
+    useEffect(() => {
         getLocation()
     }, []);
 
     useEffect(() => {
-      const getRecords = async () => {
-        let records = await peopleContract.getCrimeReports();
-        setPersonsDirectory(records[id]);
-  /*       const locationsToShow = await peopleContract.getAllReportCoordinates(id);
-        setLocations(locationsToShow.map(loc => ({
-            coordinates: {
-                lat: Number.parseFloat(loc.lat),
-                lng: Number.parseFloat(loc.lng),
-            },
-            radius: Number.parseFloat(loc.radius)
-        }))); */
-      };
-      getRecords()
+        const getRecords = async () => {
+            let records = await peopleContract.getCrimeReports();
+            setPersonsDirectory(records[id]);
+            const locationsToShow = await peopleContract.getAllReportCoordinates(id);
+            setLocations(locationsToShow.map(loc => ({
+                coordinates: {
+                    lat: Number.parseFloat(loc.lat),
+                    lng: Number.parseFloat(loc.lng),
+                },
+                radius: Number.parseFloat(loc.radius)
+            })));
+            const newReports = await peopleContract.getFollowupReports(id);
+            setFollowUpReports(newReports);
+        };
+        if (id) {
+            getRecords();
+        }
     }, [peopleContract, id]);
 
 
     const person = record?.missingPerson;
 
-    
+
     return (
-        <Container sx={{marginTop: 2}}>
-            {record && 
+        <Container sx={{ marginTop: 2 }}>
+            {record &&
                 (<Card sx={{ p: 3 }}>
                     <Stack direction="row" pb={3}>
                         <Image
@@ -86,26 +100,25 @@ function MissinPerson() {
                             </Stack>
 
                             <Box pl={2}>
-                                <ListItem divider disablePadding>
-                                    <ListItemText primary={`Weight: ${person.weight.toString()}`} divider />
+                                <ListItem divider={true} disablePadding>
+                                    <ListItemText primary={`Weight: ${person.weight.toString()}`} />
                                 </ListItem>
-                                <ListItem divider disablePadding>
-                                    <ListItemText primary={`Height: ${person.height.toString()}`} divider />
+                                <ListItem divider={true} disablePadding>
+                                    <ListItemText primary={`Height: ${person.height.toString()}`} />
                                 </ListItem>
-                                <ListItem divider disablePadding>
+                                <ListItem divider={true} disablePadding>
                                     <ListItemText
                                         primary={`Birth Date: ${moment(Number.parseInt(person.birthDate.toString())).format('DD-MMM-YYYY')}`}
-                                        divider
                                     />
                                 </ListItem>
-                                <ListItem divider disablePadding>
-                                    <ListItemText primary={`Nationality: ${person.nationality}`} divider />
+                                <ListItem divider={true} disablePadding>
+                                    <ListItemText primary={`Nationality: ${person.nationality}`} />
                                 </ListItem>
-                                <ListItem divider disablePadding>
-                                    <ListItemText primary={`Eyes: ${person.eyes}`} divider />
+                                <ListItem divider={true} disablePadding>
+                                    <ListItemText primary={`Eyes: ${person.eyes}`} />
                                 </ListItem>
-                                <ListItem divider disablePadding>
-                                    <ListItemText primary={`Hair: ${person.hair}`} divider />
+                                <ListItem divider={true} disablePadding>
+                                    <ListItemText primary={`Hair: ${person.hair}`} />
                                 </ListItem>
                             </Box>
                         </List>
@@ -114,8 +127,8 @@ function MissinPerson() {
                         initialPosition: userLocation,
                         enableControls: false,
                         locations
-                        }} />}
-                    { record && <CustomizedTimeline {...{record}}/>}
+                    }} />}
+                    {record && <CustomizedTimeline {...{ record, submitTip, followUpReports }} />}
                 </Card>
                 )}
         </Container >
