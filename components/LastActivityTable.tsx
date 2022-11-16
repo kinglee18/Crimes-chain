@@ -14,6 +14,9 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
+interface CollapsibleTableProps {
+  crimes: any[];
+};
 function createData(name: string, calories: string, fat: string) {
   return {
     name,
@@ -98,7 +101,7 @@ const rows = [
   createData("Murder", "Coyoacan, CDMX", "22/Ene/22"),
 ];
 
-export default function CollapsibleTable() {
+export default function CollapsibleTable({crimes: []}: CollapsibleTableProps) {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
