@@ -1,8 +1,7 @@
-import { AddPhotoAlternate } from '@mui/icons-material';
-import { Button, CardActionArea, Divider, Fab, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, TextareaAutosize, TextField } from '@mui/material';
+import {  Divider, Fab, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, TextField } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
-import { Dispatch, Fragment, SyntheticEvent, useEffect, useState } from 'react';
+import { Dispatch, SyntheticEvent } from 'react';
 import { PhotoLoader } from './PhotoLoader';
 
 
@@ -53,6 +52,7 @@ export const PersonalDataForm = ({ formValues, setFormValues, images = [], setIm
                         name="name" 
                         variant="filled" 
                         onChange={updateFormField} 
+                        inputProps={{inputMode: 'text'}}
                         required
                         value={formValues.name}
                     />
@@ -66,6 +66,7 @@ export const PersonalDataForm = ({ formValues, setFormValues, images = [], setIm
                         onChange={updateFormField} 
                         required
                         type='number'
+                        inputProps={{inputMode: 'numeric', min: 10}}
                         value={formValues.height}
                     />
                 </Grid>
@@ -77,7 +78,8 @@ export const PersonalDataForm = ({ formValues, setFormValues, images = [], setIm
                         variant="filled" 
                         onChange={updateFormField} 
                         required
-                        type='number' 
+                        type='number'
+                        inputProps={{inputMode: 'numeric', min: 10}}
                         value={formValues.weight}
                     />
                 </Grid>
