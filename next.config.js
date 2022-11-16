@@ -3,8 +3,8 @@ const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
   images: {
-    domains: ['ipfs.chainsafe.io', 'infura-ipfs.io', 'ipfs.io'],
     unoptimized: true,
+    domains: ['ipfs.chainsafe.io', 'infura-ipfs.io', 'ipfs.io']
   },
   eslint: {
     ignoreDuringBuilds: true,
