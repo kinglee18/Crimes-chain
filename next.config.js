@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
   images: {
-    unoptimized: true,
-    domains: ['ipfs.chainsafe.io', 'infura-ipfs.io', 'ipfs.io']
+    domains: ['ipfs.chainsafe.io', 'infura-ipfs.io', 'ipfs.io'],
+    loader: 'imgix',
+    path: '',
   },
   eslint: {
     ignoreDuringBuilds: true,
