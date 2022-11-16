@@ -3,7 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 import {
     Alert,
     AlertProps,
+    Backdrop,
     Button,
+    CircularProgress,
     IconButton,
     Snackbar,
     Stack,
@@ -43,6 +45,7 @@ const AddMissingPerson: NextPage = () => {
     const [snackbar, toogleSnackBar] = useState<SnackBarOptions>({ open: false });
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set<number>());
+    const [openBackDrop, setOpenBackDrop] = useState(false);
     const steps = [
         { label: 'Register Personal Data', key: 'person' },
         { label: 'Disappeareance data', key: 'dissapeareance' },
@@ -102,8 +105,9 @@ const AddMissingPerson: NextPage = () => {
           }
         return ipfsImages;
     };
-    
+
     const registerDisappearance = async () => {
+        setOpenBackDrop(true);
         const ipfsImages = await saveImages();
         let newLocations = locations.map(location => ({
             lat: location.coordinates.lat.toString(),
@@ -116,7 +120,7 @@ const AddMissingPerson: NextPage = () => {
             birthDate: formValues.birthDate.getTime()
         };
         peopleContract.createReport(newLocations, request).then(
-            () => {
+            (data) => {
                 toogleSnackBar({ open: true, message: 'Your information has been saved', severity: 'success' })
             }
         ).catch(
@@ -127,7 +131,7 @@ const AddMissingPerson: NextPage = () => {
                     toogleSnackBar({ open: true, message: e.message, severity: 'warning' })
                 }
             }
-        )
+        );
     };
     const submitForm = () => {
         if (locations.length >= 1) {
@@ -228,8 +232,13 @@ const AddMissingPerson: NextPage = () => {
                 action={action}
             >
                 <Alert severity={snackbar.severity || 'info'}>{snackbar.message}</Alert>
-
             </Snackbar>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBackDrop}
+                >
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </Box>
     );
 };
