@@ -4,7 +4,7 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { ResponsiveAppBar } from "../components/GlobalNavBar";
 import { Box, Button, Stack } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import Typography from "@mui/material/Typography";
 import Collapse from "@mui/material/Collapse";
@@ -65,10 +65,22 @@ const MetricBox: React.FC<{ crime: string; place: string; amount: number }> = ({
 };
 
 const Dashboard: NextPage = () => {
+  const [userLocation, setUserLocation] = useState<GeolocationPosition>();
+  const showPosition = (position: GeolocationPosition) => {
+    setUserLocation(position)
+  }
+  const getLocation = () => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    }
+}
+  useEffect(() => {
+    getLocation()
+}, []);
   return (
     <>
       <Stack direction={"row"} justifyContent={"space-around"}>
-        <MetricBox
+      {/*   <MetricBox
           {...{ crime: "Robo mano Armada", place: "Cdmx", amount: 11 }}
         />
         <MetricBox {...{ crime: "Secuestro", place: "Edomex", amount: 2 }} />
@@ -79,7 +91,7 @@ const Dashboard: NextPage = () => {
           {...{ crime: "Robo mano Armada", place: "Cdmx", amount: 11 }}
         />
         <MetricBox {...{ crime: "Secuestro", place: "Edomex", amount: 2 }} />
-        <MetricBox {...{ crime: "Secuestro", place: "Edomex", amount: 2 }} />
+        <MetricBox {...{ crime: "Secuestro", place: "Edomex", amount: 2 }} /> */}
       </Stack>
       <Box sx={{ p: 3 }}>
         <Typography
@@ -96,8 +108,14 @@ const Dashboard: NextPage = () => {
           Last crimes in your zone
         </Typography>
         <Stack direction={"row"} spacing={3}>
-          <CollapsibleTable />
-          <CrimesMap />
+          <CollapsibleTable crimes={[]}/>
+          {
+            userLocation && <CrimesMap  {...{
+              initialPosition: userLocation,
+              enableControls: false,
+            }} />
+          }
+
         </Stack>
       </Box>
     </>

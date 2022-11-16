@@ -5,6 +5,12 @@ const nextConfig = {
   images: {
     domains: ['ipfs.chainsafe.io', 'infura-ipfs.io', 'ipfs.io'],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 }
 
 module.exports = nextConfig

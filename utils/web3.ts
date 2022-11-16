@@ -1,4 +1,5 @@
-import { ethers, Signer, providers} from "ethers";
+import { ethers, Signer, providers, BigNumber} from "ethers";
+import moment from "moment";
 import { MissingPeople } from "../dapp/typechain-types";
 const missingPeopleABI = require("../dapp/artifacts/contracts/MissingPeople.sol/MissingPeople.json");
 
@@ -9,7 +10,11 @@ export const getAppW3Provider = (provider: any) => {
 
 
 export const getContractInstance = (providerOrSigner: Signer| providers.JsonRpcSigner ) => {
-   return new ethers.Contract('0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512', missingPeopleABI.abi, providerOrSigner) as MissingPeople
+  let t;
+if (providerOrSigner){
+  t = providerOrSigner.getSigner();
+}
+   return new ethers.Contract('0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6', missingPeopleABI.abi, t || providerOrSigner) as MissingPeople
  };
 
 export const getConnectedAccounts = async () => {

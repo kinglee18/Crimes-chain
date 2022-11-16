@@ -13,7 +13,6 @@ import { Article } from '@mui/icons-material';
 import { Button, Container, Stack, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { Dispatch, useState } from 'react';
-import { blockTimeStampToDate } from '../utils/web3';
 
 interface CustomizedTimelineProps {
   record: MissingPeople.ReportStructOutput,
@@ -34,11 +33,11 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
             variant="body2"
             color="text.secondary"
           >
-            {`${blockTimeStampToDate(record.created)}`}
+            {`${moment(Number.parseInt(record.created.toString())).format('DD-MMM-YYYY HH:MM')}`}
           </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineConnector />
-            <TimelineDot>
+            <TimelineDot color='primary'>
               <Article />
             </TimelineDot>
             <TimelineConnector />
@@ -51,7 +50,7 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
           </TimelineContent>
         </TimelineItem>
         {
-          followUpReports.map((followReport, index) => (
+          followUpReports.map((reportF, index) => (
             <>
               <TimelineItem>
                 <TimelineOppositeContent
@@ -60,11 +59,11 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
                   align="left"
                   color="text.secondary"
                 >
-                  {blockTimeStampToDate(followReport.created)}
+                  {`${moment(Number.parseInt(reportF.created.toString())).format('DD-MMM-YYYY HH:MM')}`}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                   <TimelineConnector />
-                  <TimelineDot color="primary">
+                  <TimelineDot color="secondary">
                     <LaptopMacIcon />
                   </TimelineDot>
                   <TimelineConnector />
@@ -73,7 +72,7 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
                   <Typography variant="h6" component="span">
                     Code
                   </Typography>
-                  <Typography>Because it&apos;s awsesome!</Typography>
+                  <Typography>{reportF.description.toString()}</Typography>
                 </TimelineContent>
               </TimelineItem>
             </>
