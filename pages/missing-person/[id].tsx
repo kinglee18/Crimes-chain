@@ -10,6 +10,7 @@ import { Boy, Girl, Person } from '@mui/icons-material';
 import moment from 'moment';
 import { CrimesMap } from '../../components/Map';
 import { CustomizedTimeline } from '../../components/Timeline';
+import { CommonColors } from '../../utils/interfaces';
 
 function MissinPerson() {
     const { peopleContract } = useContext(Web3Context);
@@ -67,7 +68,7 @@ function MissinPerson() {
 
 
     return (
-        <Container sx={{ marginTop: 2 }} maxWidth="xl">
+        <Container sx={{ marginTop: 2 }}>
             {record &&
                 (<Card sx={{ p: 3 }}>
                     <Stack direction="row" pb={3}>
@@ -116,11 +117,11 @@ function MissinPerson() {
                                 <ListItem divider={true} disablePadding>
                                     <ListItemText primary={`Nationality: ${person.nationality}`} />
                                 </ListItem>
-                                <ListItem divider={true} disablePadding>
-                                    <ListItemText primary={`Eyes: ${person.eyes}`} />
-                                </ListItem>
-                                <ListItem divider={true} disablePadding>
-                                    <ListItemText primary={`Hair: ${person.hair}`} />
+                                <ListItem  divider disablePadding>
+                                    <ListItemText primary={`Hair: ${CommonColors[person.eyes]}`} divider />
+                                    </ListItem>
+                                    <ListItem  divider disablePadding>
+                                    <ListItemText primary={`Hair: ${CommonColors[person.hair]}`} divider />
                                 </ListItem>
                             </Box>
                         </List>
