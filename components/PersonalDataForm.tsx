@@ -23,9 +23,7 @@ interface PersonalDataFormProps {
     images: any[],
     setImages: Dispatch<any>
 }
-enum CommonColors {
-    BLACK = 0, BROWN = 1, BLUE = 2, GREEN = 3, OTHER = 4
-}
+
 export const PersonalDataForm = ({ formValues, setFormValues, images = [], setImages }: PersonalDataFormProps) => {
 
 
@@ -123,24 +121,26 @@ export const PersonalDataForm = ({ formValues, setFormValues, images = [], setIm
                 </Grid>
                 <Grid xs={3}>
                     <FormControl fullWidth required>
-                        <InputLabel id="demo-simple-select-label">eyes</InputLabel>
+                        <InputLabel id="demo-simple-select-label">Eyes</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={formValues.eyes}
-                            label="eyes"
+                            label="Eyes"
                             name="eyes"
                             required
                             onChange={updateFormField}
                         >
-                         
-                            <MenuItem value={0}>Green</MenuItem>
+                               <MenuItem value={'0'}>Black </MenuItem> 
+                               <MenuItem value={'1'}>Brown </MenuItem> 
+                               <MenuItem value={'2'}>Blue</MenuItem> 
+                               <MenuItem value={'3'}>Green </MenuItem> 
                         </Select>
                     </FormControl>
                 </Grid>
                 <Grid xs={3}>
                     <FormControl fullWidth required>
-                        <InputLabel id="demo-simple-select-label">hair</InputLabel>
+                        <InputLabel id="demo-simple-select-label">Hair</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
@@ -150,7 +150,8 @@ export const PersonalDataForm = ({ formValues, setFormValues, images = [], setIm
                             onChange={updateFormField}
                             
                         >
-                            <MenuItem value={0}>brown</MenuItem>
+                            <MenuItem value={0}>Brown</MenuItem>
+                            <MenuItem value={1}>Black</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>

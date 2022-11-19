@@ -1,8 +1,53 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
-import "hardhat/console.sol";
+import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract MissingPeople {
+contract MissingPeople is ChainlinkClient {
+    IERC20 _token = IERC20(0x326C977E6efc84E512bB9C30f76E30c160eD06FB);
+    using Chainlink for Chainlink.Request;
+    
+    uint256 public linkPrice;
+    address private oracle;
+    bytes32 private jobId;
+    uint256 private fee;
+
+    constructor() {
+        address mumbaiLINKContract = 0x326C977E6efc84E512bB9C30f76E30c160eD06FB;
+    setChainlinkToken(mumbaiLINKContract);
+    
+        jobId = "ca98366cc7314957b8c012c72f05aeeb";
+        oracle = 0x40193c8518BB267228Fc409a613bDbD8eC5a97b3;
+        fee = 0.1 * 10 ** 18;
+    }
+
+
+receive() external payable {}
+    function requestTokenPrice() public returns (bytes32 requestId) {
+        Chainlink.Request memory request = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
+        request.add("get", "https://min-api.cryptocompare.com/data/price?fsym=MATIC&tsyms=USD");
+        request.add("path", "USD");
+        request.addInt("times", 100);
+        return sendChainlinkRequestTo(oracle, request, fee);
+    }
+
+    function fulfill (bytes32 _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
+        linkPrice = _price;
+    }
+
+    function sendReward (uint report, uint id) public  {
+        followUpReports[report][id].paid = true;
+        if (linkPrice  <= 20){
+            sendToken(followUpReports[report][id].reporter, 1);
+        } else {
+            sendToken(followUpReports[report][id].reporter, 2);
+        }
+    }
+
+    function sendToken (address to, uint256 amount) public  {
+        _token.transferFrom(msg.sender, to, amount);
+    }
+    
     event CaseClosed(uint date, Resolution resolution);
     event CaseFollowup();
 
@@ -48,6 +93,7 @@ contract MissingPeople {
         uint created;
         address reporter;
         uint report;
+        bool paid;
     }
     
     mapping(uint => Coordinates[])  public reportCoordinates;
@@ -81,9 +127,11 @@ contract MissingPeople {
             description: description,
             created: block.timestamp,
             reporter: msg.sender,
-            report: id
+            report: id,
+            paid: false
         }); 
         followUpReports[id].push(report);
+        requestTokenPrice();
         emit CaseFollowup();
     }
 

@@ -43,6 +43,8 @@ function MissinPerson() {
     useEffect(() => {
         const getRecords = async () => {
             let records = await peopleContract.getCrimeReports();
+            //let sss = await peopleContract.sendReward(0,0);
+            //debugger
             setPersonsDirectory(records[id]);
             const locationsToShow = await peopleContract.getAllReportCoordinates(id);
             setLocations(locationsToShow.map(loc => ({
@@ -65,7 +67,7 @@ function MissinPerson() {
 
 
     return (
-        <Container sx={{ marginTop: 2 }}>
+        <Container sx={{ marginTop: 2 }} maxWidth="xl">
             {record &&
                 (<Card sx={{ p: 3 }}>
                     <Stack direction="row" pb={3}>

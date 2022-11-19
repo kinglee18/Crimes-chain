@@ -21,6 +21,7 @@ import { CrimesMap } from "../components/Map";
 import { DisappeareancesForm, PersonalDataForm } from "../components/PersonalDataForm";
 import { CircleProps } from "../utils/interfaces";
 import { create, IPFSHTTPClient } from "ipfs-http-client";
+import { useRouter } from "next/router";
 
 
 interface SnackBarOptions {
@@ -30,7 +31,7 @@ interface SnackBarOptions {
 };
 
 const AddMissingPerson: NextPage = () => {
-    const { peopleContract } = useContext(Web3Context);
+    const { peopleContract,w3Provider } = useContext(Web3Context);
 
     const getLocation = () => {
         if (navigator.geolocation) {
@@ -60,6 +61,10 @@ const AddMissingPerson: NextPage = () => {
             toogleSnackBar({ open: true, message: "You must fill all the fields", severity: 'warning' });
             return false;
         }
+        if (!images.length) {
+            toogleSnackBar({ open: true, message: "You must add a photo", severity: 'warning' });
+            return false;
+        }
         let newSkipped = skipped;
         if (isStepSkipped(activeStep)) {
             newSkipped = new Set(newSkipped.values());
@@ -79,7 +84,7 @@ const AddMissingPerson: NextPage = () => {
     const [formValues, setFormValues] = useState<DisappeareancesForm>({} as DisappeareancesForm);
     const [images, setImages] = useState<any[]>([]);
     const [locations, setLocations] = useState<CircleProps[]>([]);
-
+    const router= useRouter();
     const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT;
     const projectSecret = process.env.NEXT_PUBLIC_INFURA_SECRET;
     const authorization = "Basic " + Buffer.from(projectId + ":" + projectSecret).toString('base64');
@@ -120,11 +125,15 @@ const AddMissingPerson: NextPage = () => {
             birthDate: formValues.birthDate.getTime()
         };
         peopleContract.createReport(newLocations, request).then(
-            (data) => {
-                toogleSnackBar({ open: true, message: 'Your information has been saved', severity: 'success' })
+            async (data) => {
+                await w3Provider.getTransactionReceipt(data.hash);
+                toogleSnackBar({ open: true, message: 'Your information has been saved', severity: 'success' });
+                setOpenBackDrop(false);
+                router.push('/missing-persons-directory');
             }
         ).catch(
             (e:any) => {
+                setOpenBackDrop(false);
                 if (e.operation === 'sendTransaction') {
                     toogleSnackBar({ open: true, message: 'Connect your wallet to save this record', severity: 'warning' })
                 } else {
@@ -160,7 +169,7 @@ const AddMissingPerson: NextPage = () => {
                 return false;
             }
         }
-        return Object.values(formValues).length === 9 && images.length
+        return Object.values(formValues).length === 9
     };
     return (
         <Box sx={{ margin: 3, padding: 5 }}>
@@ -189,7 +198,7 @@ const AddMissingPerson: NextPage = () => {
                     }
                     {
                         activeStep === 1 && (
-                            <DisappeareanceData {...{ userLocation, locations, setLocations }} />
+                            <DisappeareanceData {...{ userLocation, locations, setLocations , person: formValues}} />
                         )
                     }
 
@@ -246,11 +255,13 @@ const AddMissingPerson: NextPage = () => {
 type DisappeareanceDataProps = {
     userLocation: GeolocationPosition | undefined,
     locations: CircleProps[],
-    setLocations: React.Dispatch<any>
+    setLocations: React.Dispatch<any>,
+    person: any
 }
-const DisappeareanceData = ({ userLocation, locations, setLocations }: DisappeareanceDataProps) => {
+const DisappeareanceData = ({ userLocation, locations, setLocations , person}: DisappeareanceDataProps) => {
     return (
         <Grid xs={12}>
+            <h4>Add the last places where you saw {person.name}</h4>
             <Stack direction={"row"} spacing={3}>
                 {userLocation && <CrimesMap {...{
                     initialPosition: userLocation,

@@ -31,7 +31,6 @@ export const PhotoLoader = ({ images, setImages }: PhotoLoaderProps) => {
                     />
                 ))
             }
-            <CardActionArea >
                 <input
                     accept="image/jpeg"
                     id="contained-button-file"
@@ -40,12 +39,11 @@ export const PhotoLoader = ({ images, setImages }: PhotoLoaderProps) => {
                     style={{ display: 'none' }}
                     onChange={handleUploadClick}
                 />
-                <label htmlFor="contained-button-file">
+                {images.length ===0 && <label htmlFor="contained-button-file">
                     <Fab component="span" >
                         <AddPhotoAlternate />
                     </Fab>
-                </label>
-            </CardActionArea>
+                </label>}
         </Fragment>
     );
 }

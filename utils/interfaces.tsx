@@ -15,6 +15,9 @@ export enum Genre {
   MALE = 0, FEMALE = 1, OTHER = 2
 }
 
-export enum CommonColors {
-  BLACK = 0, BROWN = 1, BLUE = 2, GREEN = 3
+export const  CommonColors  = {
+  '0': 'Black',
+  '1': 'BROWN',
+  '2': 'BLUE',
+  '3': 'GREEN'
 }

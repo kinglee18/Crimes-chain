@@ -27,6 +27,7 @@ import { AppLink } from "../components/AppLink";
 import { MissingPeople } from "../dapp/typechain-types";
 import moment from "moment";
 import Link from "next/link";
+import { CommonColors } from "../utils/interfaces";
 
 
 const MissingPersonDirectory: NextPage = () => {
@@ -44,7 +45,7 @@ const MissingPersonDirectory: NextPage = () => {
 
   return (
     <Stack>
-      <Stack direction={'row'} spacing={3} justifyContent="center" alignItems="center">
+      <Stack direction={'row'} spacing={3} justifyContent="center" alignItems="center" sx={{mt: 3}}>
         <Button variant="outlined" >
           <AppLink href={'add-missing-person'} label={'Register disappearance'} />
         </Button>
@@ -109,10 +110,10 @@ const MissingPersonDirectory: NextPage = () => {
                           <ListItemText primary={`Nationality: ${missingPerson.nationality}`} divider />
                         </ListItem>
                         <ListItem  divider disablePadding>
-                          <ListItemText primary={`Eyes: ${missingPerson.eyes}`} divider />
+                          <ListItemText primary={`Hair: ${CommonColors[missingPerson.eyes]}`} divider />
                         </ListItem>
                         <ListItem  divider disablePadding>
-                          <ListItemText primary={`Hair: ${missingPerson.hair}`} divider />
+                          <ListItemText primary={`Hair: ${CommonColors[missingPerson.hair]}`} divider />
                         </ListItem>
                       </Box>
                     </List>

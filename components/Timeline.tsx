@@ -33,7 +33,7 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
             variant="body2"
             color="text.secondary"
           >
-            {`${moment(Number.parseInt(record.created.toString())).format('DD-MMM-YYYY HH:MM')}`}
+            {`${moment(Number.parseInt((record.created * 1000 ).toString())).format('DD-MMM-YYYY HH:MM')}`}
           </TimelineOppositeContent>
           <TimelineSeparator>
             <TimelineConnector />
@@ -59,7 +59,7 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
                   align="left"
                   color="text.secondary"
                 >
-                  {`${moment(Number.parseInt(reportF.created.toString())).format('DD-MMM-YYYY HH:MM')}`}
+                  {`${moment((reportF.created * 1000)).format('DD-MMM-YYYY')}`}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                   <TimelineConnector />
@@ -70,7 +70,7 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: '12px', px: 2 }} key={`follow_up${index}`}>
                   <Typography variant="h6" component="span">
-                    Code
+                    Tip
                   </Typography>
                   <Typography>{reportF.description.toString()}</Typography>
                 </TimelineContent>
