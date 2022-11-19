@@ -14,7 +14,7 @@ export const getContractInstance = (providerOrSigner: Signer| providers.JsonRpcS
 if (providerOrSigner){
   t = providerOrSigner.getSigner();
 }
-   return new ethers.Contract('0xE41C954b79a5f9dc50f5AB9519f99021ea2613E3', missingPeopleABI.abi, t || providerOrSigner) as MissingPeople
+   return new ethers.Contract('0xd001cb4C0fECf95041eBEbF3F9911eA5980e5199', missingPeopleABI.abi, t || providerOrSigner) as MissingPeople
  };
 
 export const getConnectedAccounts = async () => {

@@ -12,7 +12,9 @@ import moment from 'moment';
 import { Article } from '@mui/icons-material';
 import { Button, Container, Stack, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { Dispatch, useState } from 'react';
+import { Dispatch, useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { Web3Context } from '../context/web3Provider';
 
 interface CustomizedTimelineProps {
   record: MissingPeople.ReportStructOutput,
@@ -21,8 +23,16 @@ interface CustomizedTimelineProps {
 };
 
 export function CustomizedTimeline({ record, submitTip, followUpReports }: CustomizedTimelineProps) {
-  const [tip, setTip] = useState<string | undefined>();
+  const { peopleContract } = useContext(Web3Context);
 
+  const [tip, setTip] = useState<string | undefined>();
+  const router = useRouter();
+  const { id } = router.query;
+
+  const payReward = async (reportF) => {
+    let sss = await peopleContract.sendReward(0,0);
+    debugger
+  }
   return (
     <Container>
       <Timeline position="alternate">
@@ -69,8 +79,8 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
                   <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: '12px', px: 2 }} key={`follow_up${index}`}>
-                  <Typography variant="h6" component="span">
-                    Tip
+                  <Typography variant="h6" component="span" onClick={() => payReward(reportF)}>
+                    Tip <small style={{color :'blue', cursor: 'pointer'}} >({`${reportF.paid === true ? 'Paid': 'Send reward'}`}) </small>
                   </Typography>
                   <Typography>{reportF.description.toString()}</Typography>
                 </TimelineContent>
@@ -84,6 +94,7 @@ export function CustomizedTimeline({ record, submitTip, followUpReports }: Custo
         <TextField
           fullWidth
           label="Submit a Tip"
+          placeholder='You can receive 1 or 2 LINK tokens if your information is valuable'
           name="tip"
           variant="filled"
           onChange={e => setTip(e.target.value)}

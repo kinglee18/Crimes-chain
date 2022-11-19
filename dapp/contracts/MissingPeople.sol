@@ -45,7 +45,7 @@ receive() external payable {}
     }
 
     function sendToken (address to, uint256 amount) public  {
-        _token.transferFrom(msg.sender, to, amount);
+        _token.transfer( to, amount);
     }
     
     event CaseClosed(uint date, Resolution resolution);
