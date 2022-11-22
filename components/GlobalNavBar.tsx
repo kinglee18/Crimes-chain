@@ -36,8 +36,6 @@ const action = (
 
 
 const pages = [
-  { label: "Dashboard" },
-  { label: "Crimes" },
   { label: "missing persons", url: "missing-persons-directory" },
 ];
 const settings = ["Profile", "Account", "Logout"];
@@ -91,7 +89,7 @@ export const ResponsiveAppBar = () => {
               textDecoration: "none",
             }}
           >
-            Crimes chain
+            Searching4
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
