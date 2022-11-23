@@ -18,9 +18,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   let [w3Provider, setProvider] = useState<null | Web3Provider>();;
   let [infoMessage, setInfoMessage] = useState<null | string>(null);
 
-
-
-
   useEffect(() => {
     const init = async () => {
       if (window.ethereum) {
@@ -38,16 +35,18 @@ function MyApp({ Component, pageProps }: AppProps) {
         } else {
           setProvider(getAppW3Provider(window.ethereum));
           const account = await getConnectedAccounts();
-          
-          setPeopleContract(getContractInstance(w3Provider));
         }
-
       }
     }
     init();
-
   }, []);
 
+  useEffect(() => {
+    if (w3Provider) {
+      setPeopleContract(getContractInstance(w3Provider));
+    }
+      
+  }, [w3Provider]);
   const [peopleContract, setPeopleContract] = useState<MissingPeople | undefined>();
 
   useEffect(() => {
