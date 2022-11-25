@@ -37,7 +37,7 @@ receive() external payable {}
 
     function sendReward (uint report, uint id) public  {
         followUpReports[report][id].paid = true;
-        if (linkPrice  <= 20){
+        if (linkPrice  <= 2000){
             sendToken(followUpReports[report][id].reporter, 1);
         } else {
             sendToken(followUpReports[report][id].reporter, 2);
